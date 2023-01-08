@@ -1,0 +1,13 @@
+#Author : Tushar Shukla ( tushar.10sh@gmail.com )
+FROM local/c7-rust:v1
+RUN git clone https://github.com/helix-editor/helix
+RUN cd helix && mv rust-toolchain.toml rust-toolchain.toml.backup 
+RUN mkdir -p /opt/rust-local/helix/runtime
+ENV HELIX_RUNTIME /opt/rust-local/helix/runtime
+COPY .bashrc /home/rustdev/
+RUN cd /home/rustdev/helix && source /home/rustdev/.bashrc && cargo install --path helix-term
+RUN source /home/rustdev/.bashrc && ln -s  $(rustup which rust-analyzer)  /opt/rust-local/bin/rust-analyzer
+RUN source /home/rustdev/.bashrc && pip install python-lsp-server 
+RUN cp -pr /home/rustdev/helix/runtime /opt/rust-local/helix/
+RUN mkdir -p /home/rustdev/.config/helix
+COPY helix-conf/. /home/rustdev/.config/helix/
